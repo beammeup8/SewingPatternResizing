@@ -11,16 +11,12 @@ def convert_to_image(pdf_filename):
         counter = 0
         fileNames = []
         for image in images:
-            fileName = file_name_root + str(counter) +'.jpg'
-            image.save(fileName, 'JPEG')
+            fileName = file_name_root + str(counter) +'.png'
+            image.save(fileName, 'PNG')
             fileNames.append(fileName)
             counter += 1
         return fileNames
     else:
-        fileName = file_name_root +'.jpg'
-        images[0].save(fileName, 'JPEG')
+        fileName = file_name_root +'.png'
+        images[0].save(fileName, 'PNG')
         return [fileName]
-
-
-if __name__ == "__main__":
-    convert_to_image('BodicePrincessSleeved_GH_A0_1105Upton.pdf')
