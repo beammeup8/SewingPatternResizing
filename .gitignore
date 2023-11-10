@@ -1,6 +1,7 @@
 # ignore the pattern files
 *.pdf
 *.jpg
+*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

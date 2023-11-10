@@ -1,11 +1,46 @@
 #!/usr/bin/python 
 
 import cv2 as cv
+import numpy as np
+import argparse
+import random as rng
 
-image = cv.imread('BodicePrincessSleeved_GH_A0_1105Upton.jpg')
-assert image is not None, "file could not be read, check with os.path.exists()"
+threshold = 100
 
-gray = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
-ret, thresh = cv.threshold(gray,0,255,cv.THRESH_BINARY_INV+cv.THRESH_OTSU)
+def find_pieces(image_file):
+    image = cv.imread(image_file)
+    assert image is not None, "file could not be read, check with os.path.exists()"
 
-cv.imwrite("thresh.png", thresh)
+    gray = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
+   
+    canny_output = cv.Canny(gray, threshold, threshold * 2)
+    
+    
+    contours, _ = cv.findContours(canny_output, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    
+    
+    contours_poly = [None]*len(contours)
+    boundRect = [None]*len(contours)
+    centers = [None]*len(contours)
+    radius = [None]*len(contours)
+    for i, c in enumerate(contours):
+        contours_poly[i] = cv.approxPolyDP(c, 3, True)
+        boundRect[i] = cv.boundingRect(contours_poly[i])
+        centers[i], radius[i] = cv.minEnclosingCircle(contours_poly[i])
+    
+    
+    drawing = np.zeros((canny_output.shape[0], canny_output.shape[1], 3), dtype=np.uint8)
+    
+    
+    for i in range(len(contours)):
+        color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
+        cv.drawContours(drawing, contours_poly, i, color)
+        cv.rectangle(drawing, (int(boundRect[i][0]), int(boundRect[i][1])), \
+          (int(boundRect[i][0]+boundRect[i][2]), int(boundRect[i][1]+boundRect[i][3])), color, 2)
+    
+    
+    cv.imwrite('Contours.png', drawing)
+    
+
+
+find_pieces('BodicePrincessSleeved_GH_A0_1105Upton.jpg')
