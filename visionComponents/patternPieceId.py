@@ -32,9 +32,12 @@ def find_pieces(image):
         contours_poly[i] = cv.approxPolyDP(c, 3, True)
         boundRect[i] = cv.boundingRect(contours_poly[i])
 
-    return boundRect, contours_poly
+    pieces = get_bounded_areas(contours_poly, boundRect, image)
+    print(len(pieces))
+    return pieces
 
 def get_bounded_areas(contours, boundRect, image):
+    pieces = []
     mask_color = (255, 255, 255)
     color = (0, 255, 0)
     blank_image = np.zeros(image.shape[:2], dtype=np.uint8)
@@ -45,16 +48,19 @@ def get_bounded_areas(contours, boundRect, image):
         masked = cv.bitwise_and(image, image, mask=mask)
         masked[mask==0] = mask_color
         cropped = masked[y:y+h, x:x+w]
-        cv.imwrite("masked" + str(i) + ".png", cropped)
-    
+        pieces.append((cropped, contours[i]))
+    return pieces
 
 if __name__ == "__main__":
     image_file = 'testFiles/5oo4-Riptide-Reversible-Shorties-A0-Pattern-Pieces.png'
     image = cv.imread(image_file)
-    boundRect, contours = find_pieces(image)
+    pieces = find_pieces(image)
+    print(len(pieces))
     import os
     path, fileName = os.path.split(image_file)
-    output_boxes_on_image(image, boundRect, path + "/bounded_" + fileName)
-    output_contours_on_image(image, contours, path + "/contours_" + fileName)
-
-    get_bounded_areas(contours, boundRect, image)
+    counter = 1
+    for image, cont in pieces:
+        pieceFileName = path + "/piece" + str(counter) + "_" + fileName
+        output_contours_on_image(image, cont, pieceFileName)
+        counter += 1
+    
