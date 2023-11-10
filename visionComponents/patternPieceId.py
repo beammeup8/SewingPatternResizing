@@ -2,8 +2,9 @@
 
 import cv2 as cv
 import numpy as np
-import argparse
 import random as rng
+
+from outputOntoImage import output_boxes_on_image, output_contours_on_image
 
 threshold = 200
 min_bound_size = 100
@@ -29,19 +30,6 @@ def find_pieces(image):
 
     return boundRect, contours_poly
 
-def output_boxes_on_image(original_image, boundaries, new_file_name):
-    drawing = original_image.copy()
-    color = (0, 255, 0)
-    for x, y, w, h in boundaries:
-        cv.rectangle(drawing, (x, y), (x + w, y + h), color, 4)
-
-    cv.imwrite(new_file_name, drawing)
-
-def output_contours_on_image(original_image, contours, new_file_name):
-    drawing = original_image.copy()
-    color = (0, 255, 0)
-    cv.drawContours(drawing, contrours, -1, color, 2)
-    cv.imwrite(new_file_name, drawing)
 
 if __name__ == "__main__":
     image_file = 'BodicePrincessSleeved_GH_A0_1105Upton.jpg'
