@@ -18,7 +18,7 @@ def find_pieces(image_file):
     canny_output = cv.Canny(morph, threshold, threshold * 2)
     
     
-    contours, _ = cv.findContours(canny_output, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv.findContours(canny_output, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     
     # Convert all the dashed lines in the pattern to solid lines 
     # so that the outermost one can be grabbed instead of 
@@ -34,10 +34,10 @@ def find_pieces(image_file):
     
     drawing = np.zeros((canny_output.shape[0], canny_output.shape[1], 3), dtype=np.uint8)
     
-    
+    contour_color = (256,256,256)
     for i in range(len(contours)):
         color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
-        cv.drawContours(drawing, contours_poly, i, color)
+        cv.drawContours(drawing, contours_poly, i, contour_color)
         cv.rectangle(drawing, (int(boundRect[i][0]), int(boundRect[i][1])), \
           (int(boundRect[i][0]+boundRect[i][2]), int(boundRect[i][1]+boundRect[i][3])), color, 2)
     
