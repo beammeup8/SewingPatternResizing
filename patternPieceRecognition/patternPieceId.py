@@ -21,13 +21,9 @@ def find_pieces(image_file):
     
     contours_poly = [None]*len(contours)
     boundRect = [None]*len(contours)
-    centers = [None]*len(contours)
-    radius = [None]*len(contours)
     for i, c in enumerate(contours):
         contours_poly[i] = cv.approxPolyDP(c, 3, True)
         boundRect[i] = cv.boundingRect(contours_poly[i])
-        centers[i], radius[i] = cv.minEnclosingCircle(contours_poly[i])
-    
     
     drawing = np.zeros((canny_output.shape[0], canny_output.shape[1], 3), dtype=np.uint8)
     
