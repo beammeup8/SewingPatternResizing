@@ -8,8 +8,7 @@ import random as rng
 threshold = 100
 min_bound_size = 100
 
-def find_pieces(image_file):
-    image = cv.imread(image_file)
+def find_pieces(image):
     assert image is not None, "file could not be read, check with os.path.exists()"
 
     grey = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
@@ -22,7 +21,6 @@ def find_pieces(image_file):
     
     
     contours, _ = cv.findContours(canny_output, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-
     
     # Find boundries
     contours_poly = [None]*len(contours)
@@ -31,18 +29,7 @@ def find_pieces(image_file):
         contours_poly[i] = cv.approxPolyDP(c, 3, True)
         boundRect[i] = cv.boundingRect(contours_poly[i])
 
-    # output the result 
-    drawing = image.copy()
-
-    boundries = filter_bounds(boundRect, image.shape)
-
-    color = (0, 255, 0)
-    for bound in boundries:
-        cv.rectangle(drawing, (int(bound[0]), int(bound[1])), \
-          (int(bound[0]+bound[2]), int(bound[1]+bound[3])), color, 4)
-    
-    cv.imwrite('Contours.png', drawing)
-    print(len(boundries))
+    return filter_bounds(boundRect, image.shape)
 
 def filter_bounds(boundRect, image_shape):
     filled_image = np.zeros((image_shape[0], image_shape[1],3), np.uint8)
@@ -68,4 +55,18 @@ def filter_bounds(boundRect, image_shape):
 
     return new_bounds
 
-find_pieces('BodicePrincessSleeved_GH_A0_1105Upton.jpg')
+def output_boxes_on_image(original_image, boundaries, new_file_name):
+    drawing = original_image.copy()
+    color = (0, 255, 0)
+    for x, y, w, h in boundaries:
+        cv.rectangle(drawing, (x, y), (x + w, y + h), color, 4)
+
+    cv.imwrite(new_file_name, drawing)
+
+
+image_file = 'BodicePrincessSleeved_GH_A0_1105Upton.jpg'
+image = cv.imread(image_file)
+boundRect = find_pieces(image)
+output_boxes_on_image(image, boundRect, "bounded_" + image_file)
+
+
