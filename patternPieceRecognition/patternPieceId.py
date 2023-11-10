@@ -11,9 +11,11 @@ def find_pieces(image_file):
     image = cv.imread(image_file)
     assert image is not None, "file could not be read, check with os.path.exists()"
 
-    gray = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
-   
-    canny_output = cv.Canny(gray, threshold, threshold * 2)
+    grey = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
+    kernel = np.ones((10,10),np.uint8)
+    morph = cv.morphologyEx(grey, cv.MORPH_GRADIENT, kernel)
+
+    canny_output = cv.Canny(morph, threshold, threshold * 2)
     
     
     contours, _ = cv.findContours(canny_output, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
