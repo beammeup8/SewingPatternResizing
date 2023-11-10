@@ -33,7 +33,6 @@ def find_pieces(image):
         boundRect[i] = cv.boundingRect(contours_poly[i])
 
     pieces = get_bounded_areas(contours_poly, boundRect, image)
-    print(len(pieces))
     return pieces
 
 def get_bounded_areas(contours, boundRect, image):
@@ -55,7 +54,6 @@ if __name__ == "__main__":
     image_file = 'testFiles/5oo4-Riptide-Reversible-Shorties-A0-Pattern-Pieces.png'
     image = cv.imread(image_file)
     pieces = find_pieces(image)
-    print(len(pieces))
     import os
     path, fileName = os.path.split(image_file)
     counter = 1
