@@ -13,18 +13,15 @@ def find_pieces(image_file):
     assert image is not None, "file could not be read, check with os.path.exists()"
 
     grey = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
-    blur = cv.GaussianBlur(grey, (5,5), 0)
     kernel = np.ones((10,10),np.uint8)
+
+    #handles the dashed lines
     morph = cv.morphologyEx(grey, cv.MORPH_GRADIENT, kernel)
 
     canny_output = cv.Canny(morph, threshold, threshold * 2)
     
     
     contours, _ = cv.findContours(canny_output, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    
-    # Convert all the dashed lines in the pattern to solid lines 
-    # so that the outermost one can be grabbed instead of 
-    # whichever is a solid line
 
     
     # Find boundries
@@ -37,29 +34,38 @@ def find_pieces(image_file):
     # output the result 
     drawing = image.copy()
 
-    boundries, final_contours = filter_bounds(boundRect, contours_poly)
+    boundries = filter_bounds(boundRect, image.shape)
 
-    contour_color = (255,255,255,255)
-    for i in range(len(final_contours)):
-        color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256), 255)
-        cv.drawContours(drawing, final_contours, i, contour_color)
-        bound = boundries[i]
+    color = (0, 255, 0)
+    for bound in boundries:
         cv.rectangle(drawing, (int(bound[0]), int(bound[1])), \
-          (int(bound[0]+bound[2]), int(bound[1]+bound[3])), color, 2)
+          (int(bound[0]+bound[2]), int(bound[1]+bound[3])), color, 4)
     
     cv.imwrite('Contours.png', drawing)
     print(len(boundries))
 
-def filter_bounds(boundRect, contours_poly):
-    new_bounds = []
-    new_conts = []
-    for bound, cont in zip(boundRect, contours_poly):
-        if bound[2] < min_bound_size or bound[3] < min_bound_size:
+def filter_bounds(boundRect, image_shape):
+    filled_image = np.zeros((image_shape[0], image_shape[1],3), np.uint8)
+    color = (255, 255, 255)
+    for bound in boundRect:
+        x, y, w, h = bound
+        if w < min_bound_size or h < min_bound_size:
             continue
+        
+        cv.rectangle(filled_image, (x, y), (x + w, y + h), color, -1)
 
-        new_bounds.append(bound)
-        new_conts.append(cont)
+    # It is only black and white, so really not sure why 
+    # this is needed but it does not work if I remove it, 
+    # so my best guess is that it has to do with the color channels?
+    grey = cv.cvtColor(filled_image,cv.COLOR_BGR2GRAY)
 
-    return new_bounds, new_conts
+    contours, _ = cv.findContours(grey, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    
+    new_bounds = [None]*len(contours)
+    for i, c in enumerate(contours):
+        contour_poly = cv.approxPolyDP(c, 3, True)
+        new_bounds[i] = cv.boundingRect(contour_poly)
+
+    return new_bounds
 
 find_pieces('BodicePrincessSleeved_GH_A0_1105Upton.jpg')
