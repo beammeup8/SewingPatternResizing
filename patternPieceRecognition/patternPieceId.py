@@ -35,18 +35,17 @@ def find_pieces(image_file):
         boundRect[i] = cv.boundingRect(contours_poly[i])
 
     # output the result 
-    drawing = np.zeros((canny_output.shape[0], canny_output.shape[1], 3), dtype=np.uint8)
+    drawing = image.copy()
 
-    final_contours, boundries = filter_bounds(boundRect, contours_poly)
+    boundries, final_contours = filter_bounds(boundRect, contours_poly)
 
-    contour_color = (256,256,256)
+    contour_color = (255,255,255,255)
     for i in range(len(final_contours)):
-        color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
+        color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256), 255)
         cv.drawContours(drawing, final_contours, i, contour_color)
         bound = boundries[i]
         cv.rectangle(drawing, (int(bound[0]), int(bound[1])), \
           (int(bound[0]+bound[2]), int(bound[1]+bound[3])), color, 2)
-    
     
     cv.imwrite('Contours.png', drawing)
     print(len(boundries))
@@ -60,6 +59,7 @@ def filter_bounds(boundRect, contours_poly):
 
         new_bounds.append(bound)
         new_conts.append(cont)
-    return new_conts, new_bounds
+
+    return new_bounds, new_conts
 
 find_pieces('BodicePrincessSleeved_GH_A0_1105Upton.jpg')
