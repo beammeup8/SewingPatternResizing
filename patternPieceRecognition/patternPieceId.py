@@ -31,9 +31,10 @@ def find_pieces(image_file):
     for i, c in enumerate(contours):
         contours_poly[i] = cv.approxPolyDP(c, 3, True)
         boundRect[i] = cv.boundingRect(contours_poly[i])
-    
+
+    # output the result 
     drawing = np.zeros((canny_output.shape[0], canny_output.shape[1], 3), dtype=np.uint8)
-    
+
     contour_color = (256,256,256)
     for i in range(len(contours)):
         color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
