@@ -18,7 +18,12 @@ def find_pieces(image_file):
     
     contours, _ = cv.findContours(canny_output, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     
+    # Convert all the dashed lines in the pattern to solid lines 
+    # so that the outermost one can be grabbed instead of 
+    # whichever is a solid line
+
     
+    # Find boundries
     contours_poly = [None]*len(contours)
     boundRect = [None]*len(contours)
     for i, c in enumerate(contours):
