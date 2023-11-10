@@ -6,12 +6,14 @@ import argparse
 import random as rng
 
 threshold = 100
+min_bound_size = 100
 
 def find_pieces(image_file):
     image = cv.imread(image_file)
     assert image is not None, "file could not be read, check with os.path.exists()"
 
     grey = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
+    blur = cv.GaussianBlur(grey, (5,5), 0)
     kernel = np.ones((10,10),np.uint8)
     morph = cv.morphologyEx(grey, cv.MORPH_GRADIENT, kernel)
 
@@ -35,16 +37,29 @@ def find_pieces(image_file):
     # output the result 
     drawing = np.zeros((canny_output.shape[0], canny_output.shape[1], 3), dtype=np.uint8)
 
+    final_contours, boundries = filter_bounds(boundRect, contours_poly)
+
     contour_color = (256,256,256)
-    for i in range(len(contours)):
+    for i in range(len(final_contours)):
         color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
-        cv.drawContours(drawing, contours_poly, i, contour_color)
-        cv.rectangle(drawing, (int(boundRect[i][0]), int(boundRect[i][1])), \
-          (int(boundRect[i][0]+boundRect[i][2]), int(boundRect[i][1]+boundRect[i][3])), color, 2)
+        cv.drawContours(drawing, final_contours, i, contour_color)
+        bound = boundries[i]
+        cv.rectangle(drawing, (int(bound[0]), int(bound[1])), \
+          (int(bound[0]+bound[2]), int(bound[1]+bound[3])), color, 2)
     
     
     cv.imwrite('Contours.png', drawing)
-    
+    print(len(boundries))
 
+def filter_bounds(boundRect, contours_poly):
+    new_bounds = []
+    new_conts = []
+    for bound, cont in zip(boundRect, contours_poly):
+        if bound[2] < min_bound_size or bound[3] < min_bound_size:
+            continue
+
+        new_bounds.append(bound)
+        new_conts.append(cont)
+    return new_conts, new_bounds
 
 find_pieces('BodicePrincessSleeved_GH_A0_1105Upton.jpg')
