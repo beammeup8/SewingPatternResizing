@@ -1,3 +1,7 @@
+# ignore the pattern files
+*.pdf
+*.jpg
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
