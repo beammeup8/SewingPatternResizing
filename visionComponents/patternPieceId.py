@@ -32,7 +32,7 @@ def find_pieces(image):
 
 
 if __name__ == "__main__":
-    image_file = 'BodicePrincessSleeved_GH_A0_1105Upton.jpg'
+    image_file = '5oo4-Womens-Nancy-Raglan-Pattern-Pieces-Projector.pdf'
     image = cv.imread(image_file)
     boundRect, contrours = find_pieces(image)
     output_boxes_on_image(image, boundRect, "bounded_" + image_file)
