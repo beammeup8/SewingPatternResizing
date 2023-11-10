@@ -16,10 +16,7 @@ def find_pieces(image):
 
     #handles the dashed lines
     morph = cv.morphologyEx(grey, cv.MORPH_GRADIENT, kernel)
-
     canny_output = cv.Canny(morph, threshold, threshold * 2)
-    
-    
     contours, _ = cv.findContours(canny_output, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     
     # Find boundries
@@ -63,10 +60,10 @@ def output_boxes_on_image(original_image, boundaries, new_file_name):
 
     cv.imwrite(new_file_name, drawing)
 
-
-image_file = 'BodicePrincessSleeved_GH_A0_1105Upton.jpg'
-image = cv.imread(image_file)
-boundRect = find_pieces(image)
-output_boxes_on_image(image, boundRect, "bounded_" + image_file)
+if __name__ == "__main__":
+    image_file = 'BodicePrincessSleeved_GH_A0_1105Upton.jpg'
+    image = cv.imread(image_file)
+    boundRect = find_pieces(image)
+    output_boxes_on_image(image, boundRect, "bounded_" + image_file)
 
 
