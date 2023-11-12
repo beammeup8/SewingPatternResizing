@@ -12,9 +12,8 @@ def runProcessing(dirPath):
     imageFiles.extend(convert_to_image(dirPath + "/" + pdfFileName))
   
   print(imageFiles)
-  boundRect, contrours = find_pieces(image)
-    output_boxes_on_image(image, boundRect, "bounded_" + image_file)
-    output_contours_on_image(image, contrours, "contours_" + image_file)
-
+  for imageFile in imageFiles:
+    boundRect, contrours = find_pieces_from_image_file(imageFile)
+    
 
 runProcessing("testFiles")
