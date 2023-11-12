@@ -2,9 +2,6 @@
 
 import cv2 as cv
 import numpy as np
-import random as rng
-
-from outputOntoImage import output_boxes_on_image, output_contours_on_image
 
 threshold = 200
 min_bound_size = 100
@@ -47,7 +44,7 @@ def get_bounded_areas(contours, boundRect, image):
         masked = cv.bitwise_and(image, image, mask=mask)
         masked[mask==0] = mask_color
         cropped = masked[y:y+h, x:x+w]
-        pieces.append((cropped, contours[i]))
+        pieces.append(cropped)
     return pieces
 
 if __name__ == "__main__":
@@ -57,8 +54,8 @@ if __name__ == "__main__":
     import os
     path, fileName = os.path.split(image_file)
     counter = 1
-    for image, cont in pieces:
+    for image in pieces:
         pieceFileName = path + "/piece" + str(counter) + "_" + fileName
-        output_contours_on_image(image, cont, pieceFileName)
+        cv.imwrite(pieceFileName, image)
         counter += 1
     

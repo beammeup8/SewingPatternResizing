@@ -2,8 +2,7 @@
 import os
 
 from pdfManagement.imageFromPDF import convert_to_image
-from visionComponents.patternPieceId import find_pieces_from_image_file
-from visionComponents.outputOntoImage import output_boxes_on_image, output_contours_on_image
+from visionComponents.getIndividualPieces import find_pieces_from_image_file
 
 def runProcessing(dirPath):
   files = filter(lambda x: x.endswith(".pdf"), os.listdir(dirPath))
@@ -13,7 +12,7 @@ def runProcessing(dirPath):
   
   print(imageFiles)
   for imageFile in imageFiles:
-    boundRect, contrours = find_pieces_from_image_file(imageFile)
-    
+    pieces = find_pieces_from_image_file(imageFile)
+
 
 runProcessing("testFiles")
