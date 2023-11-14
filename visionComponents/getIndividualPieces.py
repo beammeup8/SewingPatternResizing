@@ -29,10 +29,10 @@ def find_pieces(image):
         contours_poly[i] = cv.approxPolyDP(c, 3, True)
         boundRect[i] = cv.boundingRect(contours_poly[i])
 
-    pieces = get_bounded_areas(contours_poly, boundRect, image)
+    pieces = get_bounded_areas(contours_poly, boundRect, image, morph)
     return pieces
 
-def get_bounded_areas(contours, boundRect, image):
+def get_bounded_areas(contours, boundRect, image, processed):
     pieces = []
     mask_color = (255, 255, 255)
     color = (0, 255, 0)
@@ -43,8 +43,10 @@ def get_bounded_areas(contours, boundRect, image):
         cv.drawContours(mask, contours, i, mask_color, -1)
         masked = cv.bitwise_and(image, image, mask=mask)
         masked[mask==0] = mask_color
+        processed_masked = cv.bitwise_and(processed, processed, mask=mask)
         cropped = masked[y:y+h, x:x+w]
-        pieces.append(cropped)
+        cropped_processed = processed_masked[y:y+h, x:x+w]
+        pieces.append((cropped, cropped_processed))
     return pieces
 
 if __name__ == "__main__":
@@ -54,8 +56,10 @@ if __name__ == "__main__":
     import os
     path, fileName = os.path.split(image_file)
     counter = 1
-    for image in pieces:
+    for image, processed in pieces:
         pieceFileName = path + "/piece" + str(counter) + "_" + fileName
+        processedFileName = path + "/processed" + str(counter) + "_" + fileName
         cv.imwrite(pieceFileName, image)
+        cv.imwrite(processedFileName, processed)
         counter += 1
     
