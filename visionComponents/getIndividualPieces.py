@@ -19,7 +19,6 @@ def find_pieces(image):
     #handles the dashed lines
     canny_output = cv.Canny(grey, threshold, threshold * 2)
     morph = cv.morphologyEx(canny_output, cv.MORPH_GRADIENT, kernel)
-    cv.imwrite("threshold.png", morph)
     contours, _ = cv.findContours(morph, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
     
     # Find boundries
@@ -43,10 +42,8 @@ def get_bounded_areas(contours, boundRect, image, processed):
         cv.drawContours(mask, contours, i, mask_color, -1)
         masked = cv.bitwise_and(image, image, mask=mask)
         masked[mask==0] = mask_color
-        processed_masked = cv.bitwise_and(processed, processed, mask=mask)
         cropped = masked[y:y+h, x:x+w]
-        cropped_processed = processed_masked[y:y+h, x:x+w]
-        pieces.append((cropped, cropped_processed))
+        pieces.append(cropped)
     return pieces
 
 if __name__ == "__main__":
@@ -56,10 +53,8 @@ if __name__ == "__main__":
     import os
     path, fileName = os.path.split(image_file)
     counter = 1
-    for image, processed in pieces:
+    for image in pieces:
         pieceFileName = path + "/piece" + str(counter) + "_" + fileName
-        processedFileName = path + "/processed" + str(counter) + "_" + fileName
         cv.imwrite(pieceFileName, image)
-        cv.imwrite(processedFileName, processed)
         counter += 1
     
