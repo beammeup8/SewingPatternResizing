@@ -1,19 +1,13 @@
 #!/usr/bin/python
 
 import cv2 as cv
-import pytesseract
-
-# change this if you are not on linux
-pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
-config = ('-l eng — oem 1 — psm 3')
+import easyocr as ocr
           
-def extract_text(piece):
-  grey = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
-  #handles the dashed lines
-  noise = cv.medianBlur(grey,3)
-  thresh = cv.threshold(noise, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)[1]
-  
-  text = pytesseract.image_to_string(thresh, config=config)
+def extract_text(pieceFileName):
+  reader = ocr.Reader(['en'], gpu = True)
+  text = reader.readtext(pieceFileName)
+  # lines = [l for l in text.split("\n", maxsplit=0) if l.strip() != ""]
+  # return '\n'.join(lines)
   return text
 
 if __name__ == "__main__":
@@ -23,8 +17,9 @@ if __name__ == "__main__":
   print(len(pieces))
   cnt = 0
   for image in pieces:
-    text = extract_text(image)
+    filename = "testFiles/piece_" + str(cnt) + ".png"
+    cv.imwrite(filename, image)
+    text = extract_text(filename)
     f = open("testFiles/piece_" + str(cnt) + ".txt", "w")
-    f.write(text)
-    cv.imwrite("testFiles/piece_" + str(cnt) + ".png", image)
+    f.write(str(text))
     cnt += 1
