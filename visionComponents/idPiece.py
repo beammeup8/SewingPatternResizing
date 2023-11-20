@@ -3,9 +3,9 @@
 import cv2 as cv
 import easyocr as ocr
           
-def extract_text(pieceFileName):
+def extract_text(piece):
   reader = ocr.Reader(['en'], gpu = True)
-  text = reader.readtext(pieceFileName)
+  text = reader.readtext(piece, detail=0, paragraph=True)
   # lines = [l for l in text.split("\n", maxsplit=0) if l.strip() != ""]
   # return '\n'.join(lines)
   return text
@@ -19,7 +19,7 @@ if __name__ == "__main__":
   for image in pieces:
     filename = "testFiles/piece_" + str(cnt) + ".png"
     cv.imwrite(filename, image)
-    text = extract_text(filename)
+    text = extract_text(image)
     f = open("testFiles/piece_" + str(cnt) + ".txt", "w")
     f.write(str(text))
     cnt += 1
