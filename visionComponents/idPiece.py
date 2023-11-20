@@ -5,7 +5,7 @@ import easyocr as ocr
           
 def extract_text(piece):
   reader = ocr.Reader(['en'], gpu = True)
-  text = reader.readtext(piece, detail=0, paragraph=True)
+  text = reader.readtext(piece, detail=0, paragraph=True, rotation_info = [90, 180, 270])
   # lines = [l for l in text.split("\n", maxsplit=0) if l.strip() != ""]
   # return '\n'.join(lines)
   return text
